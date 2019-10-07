@@ -8,7 +8,7 @@
     },
     {
       "id": 2,
-      "name": "Groceryx",
+      "name": "Grocery",
       "description": "Buy food supply for 1 week",
       "created": "2019-10-06 07:40:43"
     },
@@ -17,66 +17,6 @@
       "name": "Pickup Kid",
       "description": "Go to school before 4pm",
       "created": "2019-10-06 03:40:43"
-    },
-    {
-      "id": 5,
-      "name": "Buy Milk",
-      "description": "Gutom c BB",
-      "created": "2019-10-06 12:31:00"
-    },
-    {
-      "id": 6,
-      "name": "Task 1",
-      "description": "Task 1 Description",
-      "created": "2019-10-06 2:02:09"
-    },
-    {
-      "id": 7,
-      "name": "Task 3",
-      "description": "Tsk Desck",
-      "created": "2019-10-06 2:02:18"
-    },
-    {
-      "id": 8,
-      "name": "Task 4",
-      "description": "this is a task",
-      "created": "2019-10-06 2:02:31"
-    },
-    {
-      "id": 9,
-      "name": "test",
-      "description": "tesat",
-      "created": "2019-10-06 2:06:26"
-    },
-    {
-      "id": 10,
-      "name": "testa",
-      "description": "test",
-      "created": "2019-10-06 2:06:29"
-    },
-    {
-      "id": 11,
-      "name": "test",
-      "description": "test",
-      "created": "2019-10-06 2:06:33"
-    },
-    {
-      "id": 12,
-      "name": "tafd",
-      "description": "fadsfasdf",
-      "created": "2019-10-06 2:07:55"
-    },
-    {
-      "id": 13,
-      "name": "yeah",
-      "description": "fasdfasdf",
-      "created": "2019-10-06 2:08:33"
-    },
-    {
-      "id": 14,
-      "name": "fadsfas",
-      "description": "fadsfasf",
-      "created": "2019-10-06 2:08:44"
     }
   ]
 }

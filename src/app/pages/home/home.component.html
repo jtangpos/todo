@@ -2,25 +2,45 @@
 
   <div class="row mt-5 pt-5">
     <div class="col text-right">
-      <button class="btn btn-success" data-toggle="modal" data-target="#addTaskModal">Add Task</button>
+      <button class="btn btn-success mr-2" data-toggle="modal" data-target="#addTaskModal">Add Task</button>
+      <button class="btn btn-danger" *ngIf="checkedIds.length > 0" data-toggle="modal" (click)="deleteTasks()">Delete Selected Task</button>
     </div>
   </div>
 
+  <div class="row mt-5 pt-5">
+      <div class="col">
+          <input [(ngModel)]="searchText" type="text" name="search" class="form-control" placeholder="Search" >
+      </div>
+    </div>
+
 
   <table class="table table-hover mt-5">
-    <thead>
+    <thead class="thead-dark">
       <tr>
-        <th>ID</th>
-        <th>Name</th>
+        <th style="width: 5px;"></th>
+        <th (click)="sort('id')">ID
+            <span class="fas sort-icon" *ngIf="key =='id'" [ngClass]="{'fa-chevron-up':reverse,'fa-chevron-down':!reverse}"></span>
+        </th>
+        <th (click)="sort('name')">Name
+            <span class="fas sort-icon" *ngIf="key =='name'" [ngClass]="{'fa-chevron-up':reverse,'fa-chevron-down':!reverse}"></span>
+        </th>
         <th>Description</th>
-        <th>Created</th>
+        <th (click)="sort('created')">Created
+            <span class="fas sort-icon" *ngIf="key =='created'" [ngClass]="{'fa-chevron-up':reverse,'fa-chevron-down':!reverse}"></span>
+        </th>
         <th>Actions</th>
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let task of tasks | paginate: config">
-
-        <td scope="row">{{ task.id }}</td>
+      <tr *ngFor="let task of tasks | orderBy: key : reverse | filter:searchText | paginate: { itemsPerPage: 5, currentPage: p }">
+        <td>
+            <div class="form-group form-check">
+              <input type="checkbox" (change)="checkTask($event)" value="{{task.id}}" class="form-check-input">
+            </div>
+        </td>
+        <td scope="row">
+            {{ task.id }}
+        </td>
         <td> {{ task.name }}</td>
         <td> {{ task.description }}</td>
         <td> {{ task.created }}</td>
@@ -32,14 +52,14 @@
   </table>
   <div class="row mt-5 ">
       <div class="col text-center">
-          <pagination-controls (pageChange)="pageChanged($event)"></pagination-controls>
+          <pagination-controls (pageChange)="p = $event"></pagination-controls>
       </div>
     </div>
 </div>
 
 <div class="modal fade" id="addTaskModal" tabindex="-1" role="dialog" aria-labelledby="addTaskModal" aria-hidden="true">
   <div class="modal-dialog" role="document">
-      <form>
+    <form [formGroup]="addTaskForm" (ngSubmit)="createTask()">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="exampleModalLabel">Add Task</h5>
@@ -50,16 +70,28 @@
       <div class="modal-body">
           <div class="form-group">
             <label for="name">Task Name</label>
-            <input [(ngModel)]="task.name" type="text" name="name" class="form-control" id="name" >
+            <input  type="text" formControlName="name" class="form-control" id="name" >
+          </div>
+          <div *ngIf="addTaskForm.controls['name'].invalid && (addTaskForm.controls['name'].dirty || addTaskForm.controls['name'].touched)" class="alert alert-danger">
+              <div *ngIf="addTaskForm.controls['name'].errors.required">
+                <small>Name is required.</small>
+              </div>
           </div>
           <div class="form-group mt-2">
-              <label for="description">Task Description</label>
-              <textarea [(ngModel)]="task.description" name="description" class="form-control" id="description" > </textarea>
-            </div>
+            <label for="description">Task Description</label>
+            <textarea  formControlName="description" class="form-control" id="description" > </textarea>
+          </div>
+          <div *ngIf="addTaskForm.controls['description'].invalid && (addTaskForm.controls['description'].dirty || addTaskForm.controls['description'].touched)" class="alert alert-danger">
+              <div *ngIf="addTaskForm.controls['description'].errors.required">
+                  <small> Description is required.</small>
+              </div>
+          </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button class="btn btn-primary" (click)="createTask()">Create Task</button>
+        <button type="submit"[disabled]="addTaskForm.pristine || addTaskForm.invalid" class="btn btn-success">
+            Save
+        </button>
       </div>
     </div>
   </form>

@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Task } from 'src/app/models/task';
 import { TaskService } from 'src/app/services/task.service';
@@ -11,8 +12,14 @@ import { TaskService } from 'src/app/services/task.service';
 export class TaskDetailsComponent implements OnInit {
 
   task: Task;
+  editTaskForm: FormGroup;
 
-  constructor(public taskService: TaskService, private route: ActivatedRoute, private router: Router) { }
+  constructor(public taskService: TaskService, private route: ActivatedRoute, private router: Router, private fb: FormBuilder) {
+    this.editTaskForm = this.fb.group({
+      name: ['', Validators.required ],
+      description: ['', Validators.required ]
+   });
+  }
 
   ngOnInit() {
     this.taskService.getTaskById(this.route.snapshot.params.id)
@@ -23,7 +30,14 @@ export class TaskDetailsComponent implements OnInit {
     });
   }
 
+  get f() { return this.editTaskForm.controls; }
+
   updateTask() {
+    if (this.editTaskForm.invalid) {
+      return;
+    }
+    this.task.name = this.f.name.value;
+    this.task.description = this.f.description.value;
     this.taskService.updateTask(this.task)
     .subscribe((data: Task) => {
       this.task = data;

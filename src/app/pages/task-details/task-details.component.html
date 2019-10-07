@@ -40,29 +40,41 @@
 
 <div class="modal fade" id="editTaskModal" *ngIf="task" tabindex="-1" role="dialog" aria-labelledby="editTaskModal" aria-hidden="true" >
   <div class="modal-dialog" role="document">
-      <form>
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Update Task</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
+    <form [formGroup]="editTaskForm" (ngSubmit)="updateTask()">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Update Task</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label for="name">Task Name</label>
+                <input  type="text" formControlName="name" [ngModel]="task.name" class="form-control" id="name" >
+              </div>
+              <div *ngIf="editTaskForm.controls['name'].invalid && (editTaskForm.controls['name'].dirty || editTaskForm.controls['name'].touched)" class="alert alert-danger">
+                  <div *ngIf="editTaskForm.controls['name'].errors.required">
+                    <small>Name is required.</small>
+                  </div>
+              </div>
+              <div class="form-group mt-2">
+                <label for="description">Task Description</label>
+                <textarea  formControlName="description"  [ngModel]="task.description" class="form-control" id="description" > </textarea>
+              </div>
+              <div *ngIf="editTaskForm.controls['description'].invalid && (editTaskForm.controls['description'].dirty || editTaskForm.controls['description'].touched)" class="alert alert-danger">
+                  <div *ngIf="editTaskForm.controls['description'].errors.required">
+                      <small> Description is required.</small>
+                  </div>
+              </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="submit"[disabled]="editTaskForm.pristine || editTaskForm.invalid" class="btn btn-success">
+              Update
+          </button>
+        </div>
       </div>
-      <div class="modal-body">
-          <div class="form-group">
-            <label for="name">Task Name</label>
-            <input [(ngModel)]="task.name" type="text" name="name" class="form-control" id="name" >
-          </div>
-          <div class="form-group mt-2">
-              <label for="description">Task Description</label>
-              <textarea [(ngModel)]="task.description" name="description" class="form-control" id="description" > </textarea>
-            </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button class="btn btn-primary" (click)="updateTask()">Update</button>
-      </div>
-    </div>
-  </form>
+    </form>
   </div>
 </div>
