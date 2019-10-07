@@ -1,7 +1,7 @@
-import { DatePipe } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component, OnInit, TemplateRef } from '@angular/core';
 import _ from 'lodash';
+import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
+import { TaskModalComponent } from 'src/app/components/task-modal/task-modal.component';
 import { Task } from 'src/app/models/task';
 import { TaskService } from 'src/app/services/task.service';
 
@@ -19,17 +19,43 @@ export class HomeComponent implements OnInit {
   key = 'id';
   reverse = true;
   checkedIds = [];
-  addTaskForm: FormGroup;
+  modalRef: BsModalRef;
 
-  constructor(public taskService: TaskService, private datePipe: DatePipe, private fb: FormBuilder) {
-    this.addTaskForm = this.fb.group({
-      name: ['', Validators.required ],
-      description: ['', Validators.required ]
-   });
-  }
+  constructor(public taskService: TaskService, private modalService: BsModalService) { }
 
   ngOnInit() {
     this.getAllTasks();
+  }
+
+  showAddTaskModal() {
+    const initialState = {
+      title: 'Create Task'
+    };
+    this.modalRef = this.modalService.show(TaskModalComponent, {initialState});
+    this.modalRef.content.closeBtnName = 'Close';
+    this.modalService.onHide.subscribe((result) => {
+      if (result !== null) {
+        this.tasks = this.tasks.concat(JSON.parse(result));
+      }
+    });
+  }
+
+  showEditTaskModal(task: Task) {
+    const initialState = {
+      title: 'Edit Task',
+      task
+    };
+    this.modalRef = this.modalService.show(TaskModalComponent, {initialState});
+    this.modalRef.content.closeBtnName = 'Close';
+    this.modalService.onHide.subscribe((result) => {
+      if (result !== null) {
+        result = JSON.parse(result);
+        const index = _.findIndex(this.tasks, (r) => r.id === Number(result.id));
+        if (index !== -1) {
+          this.tasks[index] = result;
+        }
+      }
+    });
   }
 
   getAllTasks() {
@@ -38,26 +64,9 @@ export class HomeComponent implements OnInit {
     });
   }
 
-  get f() { return this.addTaskForm.controls; }
-
   sort(key){
     this.key = key;
     this.reverse = !this.reverse;
-  }
-
-  createTask() {
-    if (this.addTaskForm.invalid) {
-      return;
-    }
-
-    this.task.created = this.datePipe.transform(new Date(), 'yyyy-MM-dd h:mm:ss');
-    this.task.name = this.f.name.value;
-    this.task.description = this.f.description.value;
-    this.taskService.createTask(this.task)
-    .subscribe((newTask) => {
-      this.tasks = this.tasks.concat(newTask);
-    });
-    this.task = {id: null, name: '', description: '', created: ''};
   }
 
   checkTask(event) {
@@ -71,19 +80,24 @@ export class HomeComponent implements OnInit {
     }
   }
 
-  deleteTasks() {
-    const r = confirm('Are you sure you want to delete selected task!');
-    if (r === true) {
-      this.checkedIds.forEach(id => {
-        this.taskService.deleteTask(id).subscribe((data) => {
-          const index = _.findIndex(this.tasks, (task) => task.id === Number(id));
-          if (index !== -1) {
-            this.tasks.splice(index, 1);
-          }
-        });
-      });
-      this.checkedIds = [];
-    }
+  deleteTasks(template: TemplateRef<any>) {
+    this.modalRef = this.modalService.show(template, {class: 'modal-md'});
   }
 
+  deleteTasksConfirm(): void {
+    this.checkedIds.forEach(id => {
+      this.taskService.deleteTask(id).subscribe((data) => {
+        const index = _.findIndex(this.tasks, (task) => task.id === Number(id));
+        if (index !== -1) {
+          this.tasks.splice(index, 1);
+        }
+      });
+    });
+    this.checkedIds = [];
+    this.modalRef.hide();
+  }
+
+  declineDelete(): void {
+    this.modalRef.hide();
+  }
 }

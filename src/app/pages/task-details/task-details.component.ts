@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component, OnInit, TemplateRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
+import { TaskModalComponent } from 'src/app/components/task-modal/task-modal.component';
 import { Task } from 'src/app/models/task';
 import { TaskService } from 'src/app/services/task.service';
 
@@ -12,13 +13,13 @@ import { TaskService } from 'src/app/services/task.service';
 export class TaskDetailsComponent implements OnInit {
 
   task: Task;
-  editTaskForm: FormGroup;
+  modalRef: BsModalRef;
 
-  constructor(public taskService: TaskService, private route: ActivatedRoute, private router: Router, private fb: FormBuilder) {
-    this.editTaskForm = this.fb.group({
-      name: ['', Validators.required ],
-      description: ['', Validators.required ]
-   });
+  constructor(
+    public taskService: TaskService,
+    private route: ActivatedRoute,
+    private router: Router,
+    private modalService: BsModalService) {
   }
 
   ngOnInit() {
@@ -30,26 +31,32 @@ export class TaskDetailsComponent implements OnInit {
     });
   }
 
-  get f() { return this.editTaskForm.controls; }
-
-  updateTask() {
-    if (this.editTaskForm.invalid) {
-      return;
-    }
-    this.task.name = this.f.name.value;
-    this.task.description = this.f.description.value;
-    this.taskService.updateTask(this.task)
-    .subscribe((data: Task) => {
-      this.task = data;
+  showEditTaskModal() {
+    const initialState = {
+      title: 'Edit Task',
+      task: this.task
+    };
+    this.modalRef = this.modalService.show(TaskModalComponent, {initialState});
+    this.modalRef.content.closeBtnName = 'Close';
+    this.modalService.onHide.subscribe((result) => {
+      if (result !== null) {
+        this.task = JSON.parse(result);
+      }
     });
   }
 
-  deleteTask() {
-    const r = confirm('Are you sure you want to delete this task!');
-    if (r === true) {
-      this.taskService.deleteTask(this.task.id).subscribe((data) => {
-        this.router.navigate(['/home']);
-      });
-    }
+  deleteTask(template: TemplateRef<any>) {
+    this.modalRef = this.modalService.show(template, {class: 'modal-md'});
+  }
+
+  deleteTasksConfirm(): void {
+    this.taskService.deleteTask(this.task.id).subscribe((data) => {
+      this.modalRef.hide();
+      this.router.navigate(['/home']);
+    });
+  }
+
+  declineDelete(): void {
+    this.modalRef.hide();
   }
 }

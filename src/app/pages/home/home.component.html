@@ -2,8 +2,8 @@
 
   <div class="row mt-5 pt-5">
     <div class="col text-right">
-      <button class="btn btn-success mr-2" data-toggle="modal" data-target="#addTaskModal">Add Task</button>
-      <button class="btn btn-danger" *ngIf="checkedIds.length > 0" data-toggle="modal" (click)="deleteTasks()">Delete Selected Task</button>
+      <button class="btn btn-success mr-2" (click)="showAddTaskModal()">Add Task</button>
+      <button class="btn btn-danger" *ngIf="checkedIds.length > 0" (click)="deleteTasks(template)">Delete Selected Task</button>
     </div>
   </div>
 
@@ -45,55 +45,23 @@
         <td> {{ task.description }}</td>
         <td> {{ task.created }}</td>
         <td>
+            <button class="btn btn-warning mr-2" (click)="showEditTaskModal(task)"> Edit </button>
           <button class="btn btn-primary" routerLink="/task/{{task.id}}"> Show details</button>
         </td>
       </tr>
     </tbody>
   </table>
   <div class="row mt-5 ">
-      <div class="col text-center">
+      <div class="col text-center" *ngIf="this.tasks && this.tasks.length > 5">
           <pagination-controls (pageChange)="p = $event"></pagination-controls>
       </div>
     </div>
 </div>
 
-<div class="modal fade" id="addTaskModal" tabindex="-1" role="dialog" aria-labelledby="addTaskModal" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <form [formGroup]="addTaskForm" (ngSubmit)="createTask()">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Add Task</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-          <div class="form-group">
-            <label for="name">Task Name</label>
-            <input  type="text" formControlName="name" class="form-control" id="name" >
-          </div>
-          <div *ngIf="addTaskForm.controls['name'].invalid && (addTaskForm.controls['name'].dirty || addTaskForm.controls['name'].touched)" class="alert alert-danger">
-              <div *ngIf="addTaskForm.controls['name'].errors.required">
-                <small>Name is required.</small>
-              </div>
-          </div>
-          <div class="form-group mt-2">
-            <label for="description">Task Description</label>
-            <textarea  formControlName="description" class="form-control" id="description" > </textarea>
-          </div>
-          <div *ngIf="addTaskForm.controls['description'].invalid && (addTaskForm.controls['description'].dirty || addTaskForm.controls['description'].touched)" class="alert alert-danger">
-              <div *ngIf="addTaskForm.controls['description'].errors.required">
-                  <small> Description is required.</small>
-              </div>
-          </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="submit"[disabled]="addTaskForm.pristine || addTaskForm.invalid" class="btn btn-success">
-            Save
-        </button>
-      </div>
-    </div>
-  </form>
+<ng-template #template>
+  <div class="modal-body text-center">
+    <p>Are you sure you want to delete selected records?</p>
+    <button type="button" class="btn btn-success" (click)="deleteTasksConfirm()" >Yes</button>
+    <button type="button" class="btn btn-default" (click)="declineDelete()" >No</button>
   </div>
-</div>
+</ng-template>

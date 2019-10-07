@@ -18,7 +18,9 @@ Run `ng build` to build the project. The build artifacts will be stored in the `
 git clone https://github.com/jtangpos/todo.git
 
 
-# Run Api Server
+# Running Locally
+npm install
 npm run json-server
+ng serve  or ng serve --open (open in browser window)
 
 
