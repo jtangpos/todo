@@ -20,7 +20,7 @@ git clone https://github.com/jtangpos/todo.git
 
 # Running Locally
  - `npm install`
- - `npm run json-server`
+ - `npm run json-server` (new terminal)
  - `ng serve`  or `ng serve --open` (open in browser window)
 
 
